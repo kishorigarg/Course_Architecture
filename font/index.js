@@ -20,7 +20,7 @@ import userRoute from './routes/user.js'
 //const userRoute = require("./routes/user");
 
 const app = express();
-const PORT = 8001;
+const PORT = 3000;
 
 app.get('/login', restrictToLoggedinUserOnly, (req, res) => {
   // Route handler for /profile
@@ -59,4 +59,5 @@ app.get("/url/:shortId", async (req, res) => {
   res.redirect(entry.redirectURL);
 });
 
-app.listen(PORT, () => console.log(`Server Started at PORT:${PORT}`));
+app.listen(PORT, () => console.log(`Server started at http://localhost:${PORT}`));
+

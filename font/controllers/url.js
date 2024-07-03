@@ -3,12 +3,12 @@ import URL from '../models/url.js'
 //const shortid = require("shortid");
 //const URL = require("../models/url");
 
-async function handleGenerateNewShortURL(req, res) {
+export const handleGenerateNewShortURL=(req, res) => {
   const body = req.body;
   if (!body.url) return res.status(400).json({ error: "url is required" });
   const shortID = shortid();
 
-  await URL.create({
+   URL.create({
     shortId: shortID,
     redirectURL: body.url,
     visitHistory: [],
@@ -20,16 +20,16 @@ async function handleGenerateNewShortURL(req, res) {
   });
 }
 
-async function handleGetAnalytics(req, res) {
+export const handleGetAnalytics=(req, res)=>  {
   const shortId = req.params.shortId;
-  const result = await URL.findOne({ shortId });
+  const result =  URL.findOne({ shortId });
   return res.json({
     totalClicks: result.visitHistory.length,
     analytics: result.visitHistory,
   });
 }
 
-module.exports = {
+/*module.exports = {
   handleGenerateNewShortURL,
   handleGetAnalytics,
-};
+};*/

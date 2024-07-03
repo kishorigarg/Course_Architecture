@@ -1,25 +1,18 @@
-import express from 'express'
-import URL from '../models/url.js'
-//const express = require("express");
-//const URL = require("../models/url");
 
-const router = express.Router();
+const sessionIdToUserMap = new Map();
 
-router.get("/", async (req, res) => {
-  if (!req.user) return res.redirect("/login");
-  const allurls = await URL.find({ createdBy: req.user._id });
-  return res.render("2 course and architecture for CI 1", {
-    urls: allurls,
-  });
-});
+export const setUser=(id, user) => {
+  sessionIdToUserMap.set(id, user);
+}
 
-router.get("/signup", (req, res) => {
-  return res.render("signup");
-});
+const getUser=(id) =>{
+  return sessionIdToUserMap.get(id);
+}
 
-router.get("/login", (req, res) => {
-  return res.render("login");
-});
+/*module.exports = {
+  setUser,
+  getUser,
+};*/
 
-//module.exports = router;
-export default router;
+//export default {setUser,getUser,};
+export default getUser;

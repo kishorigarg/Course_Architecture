@@ -1,5 +1,7 @@
-const express = require("express");
-const URL = require("../models/url");
+import express from 'express'
+import URL from '../models/url.js'
+//const express = require("express");
+//const URL = require("../models/url");
 
 const router = express.Router();
 
