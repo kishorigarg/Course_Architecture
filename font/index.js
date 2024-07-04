@@ -1,63 +1,76 @@
-import express from 'express'
-import path from 'path'
-import cookieParser from 'cookie-parser'
-import  connectToMongoDB  from './connect.js'
-import { restrictToLoggedinUserOnly,checkAuth} from './middlewares/auth.js';
-import urlRoute from './routes/url.js'
-//import {checkAuth} from './middlewares/auth.js'
-//import { restrictToLoggedinUserOnly, checkAuth } from './middlewares/auth.js'
-import URL from './models/url.js'
-import staticRoute from './routes/staticRouter.js'
-import userRoute from './routes/user.js'
-
-//const cookieParser = require('cookie-parser');
-//const { connectToMongoDB } = require("./connect");
-//const { restrictToLoggedinUserOnly, checkAuth } = require("./middlewares/auth");
-//const URL = require("./models/url");
-
-//const urlRoute = require("./routes/url");
-//const staticRoute = require("./routes/staticRouter");
-//const userRoute = require("./routes/user");
+import http from 'http';
+import express from 'express';
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import bodyParser from 'body-parser';
+import userSchema from './models/user.js';
 
 const app = express();
-const PORT = 3000;
 
-app.get('/login', restrictToLoggedinUserOnly, (req, res) => {
-  // Route handler for /profile
-  res.send('2 course and architecture for CI 1');
-});
+mongoose.connect("mongodb://127.0.0.1:27017/csit")
+  .then(() => console.log("mongodb connected"))
+  .catch(err => console.log("mongo error", err));
 
-connectToMongoDB(process.env.MONGODB ?? "mongodb://localhost:27017/csit").then(() =>
-  console.log("Mongodb connected")
-);
-
+const User = mongoose.model("User", userSchema);
 app.set("view engine", "ejs");
-app.set("views", path.resolve("./views"));
+app.set("views", "./views");
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(express.static('public'));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-
-app.use("/url", restrictToLoggedinUserOnly, urlRoute);
-app.use("/user", userRoute);
-app.use("/", checkAuth, staticRoute);
-
-app.get("/url/:shortId", async (req, res) => {
-  const shortId = req.params.shortId;
-  const entry = await URL.findOneAndUpdate(
-    {
-      shortId,
-    },
-    {
-      $push: {
-        visitHistory: {
-          timestamp: Date.now(),
-        },
-      },
-    }
-  );
-  res.redirect(entry.redirectURL);
+app.get('/', (req, res) => {
+  res.render('login');
+});
+app.get('/login', (req, res) => {
+  res.render('login');
 });
 
-app.listen(PORT, () => console.log(`Server started at http://localhost:${PORT}`));
+app.get('/signup', (req, res) => {
+  res.render('signup');
+});
 
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.findOne({ username });
+    if (user) {
+      const match = await bcrypt.compare(password, user.password);
+      if (match) {
+
+        res.redirect('/home');
+      } else {
+        res.status(401).send('Incorrect password');
+      }
+    } else {
+      res.redirect('/signup');
+    }
+  } catch (err) {
+    console.error('Error during login:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+app.get('/home', (req, res) => {
+  res.render('homepage', { title: 'Home Page', user: req.user });
+});
+app.post("/signup", async (req, res) => {
+  const { username, email, password, category } = req.body;
+  try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).send('User already exists');
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
+    const newUser = new User({ username, email, password: passwordHash, category });
+    await newUser.save();
+    res.redirect('/login');
+  } catch (err) {
+    console.error('Error during signup:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
+const server = http.createServer(app);
+server.listen(3000, () => {
+  console.log("Server started at http://localhost:3000");
+});

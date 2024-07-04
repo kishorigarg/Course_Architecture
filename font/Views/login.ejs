@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,20 +10,16 @@
             padding: 0;
             font-family: Arial, sans-serif;
             background: url('wall-background.jpg') no-repeat center center fixed;
-            /* Path to your background image */
             background-size: cover;
             color: white;
         }
-
         .container {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color:#f7f7f7;
-
+            background-color: rgba(0, 0, 0, 0.5);
         }
-
         .box {
             background: black;
             padding: 20px;
@@ -33,11 +28,9 @@
             width: 300px;
             text-align: center;
         }
-
         .box h2 {
             margin-bottom: 20px;
         }
-
         .box input[type="text"],
         .box input[type="password"] {
             width: calc(100% - 20px);
@@ -49,7 +42,6 @@
             color: black;
             text-align: center;
         }
-
         .box input[type="submit"] {
             width: 100%;
             padding: 10px;
@@ -60,62 +52,22 @@
             font-size: 16px;
             cursor: pointer;
         }
-
         .box input[type="submit"]:hover {
             background: #666;
         }
-
-        .logo img {
-            width: 212px;
-            position: relative;
-            top: -15rem;
-            left: -24rem;
-            border-radius: 10px;
-        }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <div class="logo">
-
-        </div>
         <div class="box">
             <h2>Login Page</h2>
-            <form action="/login" method="post"  onsubmit="return login(event)">
+            <form action="/login" method="post">
                 <input type="text" id="username" name="username" placeholder="Username" required><br>
                 <input type="password" id="password" name="password" placeholder="Password" required><br>
                 <input type="submit" value="Login">
-                
-<p>Don't have an account? <a href="Register.html">Register here</a></p>
-
-                
-                
+                <p>Don't have an account? <a href="/signup">Register here</a></p>
             </form>
         </div>
     </div>
-    <script>
-
-
-        function login(event) {
-            event.preventDefault();
-            
-            var username = document.getElementById('username').value;
-            var password = document.getElementById('password').value;
-
-            if (username && password) {
-                alert('Login successful');
-                // Redirect to another page after successful login
-                window.location.href = 'http://127.0.0.1:5500/font/2%20course%20and%20architecture%20for%20CI%201.html';
-            } else {
-                alert('Please enter both username and password');
-            }
-        }
-
-
-    </script>
-
-
 </body>
-
 </html>
